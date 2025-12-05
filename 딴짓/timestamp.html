@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<body>
+
+<h3>🎧 음절 길이(duration) 자동 측정기</h3>
+<p>
+노래마다 스페이스 누르세요
+</p>
+
+<pre id="log" style="background:#eee; padding:10px; white-space: pre-wrap;"></pre>
+
+<script>
+const log = document.getElementById("log");
+
+let timestamps = [];      // 각 음절 시작 "상대 시간" 저장
+let baseTime = null;      // 첫 스페이스바 기준 시간
+
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space") {
+    // 기본 동작(페이지 스크롤 등) 막기
+    e.preventDefault();
+
+    const now = performance.now(); // ms 단위
+
+    if (baseTime === null) {
+      baseTime = now;             // 첫 번째 스페이스 시점 기준
+    }
+
+    const t = (now - baseTime) / 1000; // 초 단위로 변환
+    timestamps.push(t);
+
+    log.textContent += `[start] ${t.toFixed(2)}s\n`;
+  }
+});
+
+// duration 계산 함수
+function calculateDurations() {
+  if (timestamps.length < 2) {
+    log.textContent += `\n(계산할 구간이 부족합니다. 최소 2번 이상 찍어야 해요)\n`;
+    return;
+  }
+
+  let durations = [];
+  for (let i = 0; i < timestamps.length - 1; i++) {
+    const d = timestamps[i+1] - timestamps[i];
+    durations.push(d);
+  }
+
+  log.textContent += `\n=== Duration Result (초) ===\n`;
+  durations.forEach((d, i) => {
+    log.textContent += `음절${i+1}: ${d.toFixed(2)}초\n`;
+  });
+
+  // JS 딜레이(ms) 배열 형태도 같이 출력해 줄게
+  log.textContent += `\n=== JS delay(ms) 배열 ===\n[`;
+  log.textContent += durations.map(d => Math.round(d * 1000)).join(", ");
+  log.textContent += `]\n`;
+}
+
+// 콘솔에서 finish() 치면 길이 계산
+window.finish = calculateDurations;
+</script>
+
+<p>노래 끝나고 브라우저 콘솔에서 <b>finish()</b> 입력하면 길이 계산됩니다.</p>
+
+</body>
+</html>

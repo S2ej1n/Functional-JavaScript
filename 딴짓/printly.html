@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <body>
+
+    <div id="fixed" style="white-space: pre-line; font-size: 18px; margin-bottom: 20px; margin-left: 20px;">
+    내가 기다린다는 봄
+    왔으니 이번엔 놓지 말라고</div>
+
+    <div id="typing" style="white-space: pre-line; font-size: 18px; margin-left: 20px;"></div>
+
+    <script>
+      const target = document.getElementById("typing");
+
+      const delays = [
+        2814, 269, 1048, 287, 363, 389, 398, 383, 4220,
+        213, 382, 368, 402, 491, 774, 342, 254, 2771,
+        229, 357, 357, 418, 516, 723, 334, 261, 4658,
+        2841, 251, 1038, 246, 365, 406, 388, 393, 4229,
+        222, 346, 350, 408, 543, 733, 355, 278, 2779,
+        224, 363, 370, 414, 504, 729, 348, 251
+      ];
+
+      const text =
+      `아슬히 고개 내민 내게
+      첫 봄인사를 건네줘요 피울 수 있게 도와줘요
+      이 마음 저무는 날까지
+      푸른 낭만을 선물할게 초라한 나를 꺾어가요`;
+
+      const syllables = "아슬히고개내민내게첫봄인사를건네줘요피울수있게도와줘요이마음저무는날까지푸른낭만을선물할게초라한나를꺾어가요";
+
+      async function playLyrics(text, syllables, delays) {
+        let sIndex = 0; // 기준은 syll
+
+        await new Promise(res => setTimeout(res, 5960));
+
+        for (let i = 0; i < text.length; i++) {
+          const ch = text[i];
+
+          target.textContent += ch;
+
+          if (ch === " " || ch === "\n") {
+            // 공백/줄바꿈은 딜레이 없이 바로 출력
+            continue;
+          }
+
+          // syllables에서 현재 음절과 text에서의 문자가 일치할 때만 delay 적용
+          if (syllables[sIndex] === ch) {
+            // 다음 syllable까지 delay
+            await new Promise(res => setTimeout(res, delays[sIndex]));
+            sIndex++;
+          }
+        }
+      }
+
+      playLyrics(text, syllables, delays);
+    </script>
+  </body>
+</html>
